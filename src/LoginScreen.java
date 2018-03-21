@@ -47,7 +47,22 @@ public class LoginScreen extends JPanel {
                     // Getting username and password inputting by user
                     username = usernameField.getText();
                     password = passwordField.getText();
-                    checkLogin();
+                    if (username.equals("")) {
+                        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(),
+                                "Please enter your username.",
+                                "No Username",
+                                JOptionPane.WARNING_MESSAGE);
+                    } else if (password.equals("")) {
+                        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(),
+                                "Please enter your password.",
+                                "No Password",
+                                JOptionPane.WARNING_MESSAGE);
+                    } else if (!checkLogin()) {
+                        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(),
+                                "Username or password is incorrect.",
+                                "Error",
+                                JOptionPane.WARNING_MESSAGE);
+                    }
                 }
             }
         });
@@ -66,7 +81,22 @@ public class LoginScreen extends JPanel {
                     // Getting username and password inputting by user
                     username = usernameField.getText();
                     password = passwordField.getText();
-                    checkLogin();
+                    if (username.equals("")) {
+                        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(),
+                                "Please enter your username.",
+                                "No Username",
+                                JOptionPane.WARNING_MESSAGE);
+                    } else if (password.equals("")) {
+                        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(),
+                                "Please enter your password.",
+                                "No Password",
+                                JOptionPane.WARNING_MESSAGE);
+                    } else if (!checkLogin()) {
+                        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(),
+                                "Username or password is incorrect.",
+                                "Error",
+                                JOptionPane.WARNING_MESSAGE);
+                    }
                 }
             }
         });
@@ -85,7 +115,17 @@ public class LoginScreen extends JPanel {
                 // Getting username and password inputting by user
                 username = usernameField.getText();
                 password = passwordField.getText();
-                if (!checkLogin()) {
+                if (username.equals("")) {
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(),
+                            "Please enter your username.",
+                            "No Username",
+                            JOptionPane.WARNING_MESSAGE);
+                } else if (password.equals("")) {
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(),
+                            "Please enter your password.",
+                            "No Password",
+                            JOptionPane.WARNING_MESSAGE);
+                } else if (!checkLogin()) {
                     JOptionPane.showMessageDialog(JOptionPane.getRootFrame(),
                             "Username or password is incorrect.",
                             "Error",
