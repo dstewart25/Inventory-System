@@ -1,13 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.awt.event.*;
+import java.sql.*;
 
 /*
 Shows the login screen to either login as the user or vendor
@@ -19,7 +13,7 @@ public class LoginScreen extends JPanel {
 
     public LoginScreen(JFrame frame) {
         this.frame = frame;
-        frame.setSize(400,200);
+        frame.setSize(400,275);
         setLayout(new GridBagLayout());
         initialize(); // Initializing the view
 
@@ -31,7 +25,7 @@ public class LoginScreen extends JPanel {
     Filling the panel
      */
     private void initialize() {
-        frame.setTitle("Login");
+        frame.setTitle("MFIS");
 
         GridBagConstraints c = new GridBagConstraints();
 
@@ -57,6 +51,12 @@ public class LoginScreen extends JPanel {
                 }
             }
         });
+        usernameField.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                usernameField.setText("");
+            }
+        });
         passwordField.setColumns(20);
         passwordField.addKeyListener(new KeyAdapter() {
             @Override
@@ -68,6 +68,12 @@ public class LoginScreen extends JPanel {
                     password = passwordField.getText();
                     checkLogin();
                 }
+            }
+        });
+        passwordField.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                passwordField.setText("");
             }
         });
 

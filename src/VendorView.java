@@ -13,7 +13,7 @@ public class VendorView extends JPanel {
     }
 
     private void initialize() {
-        frame.setTitle("Vendor");
+        frame.setTitle("MFIS");
 
         // Sub-panel to hold label and log out button
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -31,6 +31,7 @@ public class VendorView extends JPanel {
                 frame.getContentPane().add(new LoginScreen(frame));
                 frame.pack();
                 frame.getContentPane().setVisible(true);
+                frame.setSize(400,275);
             }
         });
 

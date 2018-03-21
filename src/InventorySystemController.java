@@ -25,5 +25,7 @@ public class InventorySystemController extends JFrame {
         getContentPane().add(new LoginScreen(myFrame), BorderLayout.CENTER);
         pack();
         getContentPane().setVisible(true);
+        myFrame.setSize(400,275);
+        myFrame.setLocationRelativeTo(null);
     }
 }
