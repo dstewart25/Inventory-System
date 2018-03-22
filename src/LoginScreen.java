@@ -215,8 +215,6 @@ public class LoginScreen extends JPanel {
                     return true;
                 }
             }
-
-            conn.close();
         } catch (Exception e) {
             System.out.println(e);
         }

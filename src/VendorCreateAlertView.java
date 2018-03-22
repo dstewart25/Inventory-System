@@ -9,6 +9,9 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class VendorCreateAlertView extends JPanel {
+    private JTextField alertSubjectField;
+    private JEditorPane alertBodyPane;
+
     public VendorCreateAlertView() {
         setLayout(new BorderLayout());
         initialize();
@@ -23,14 +26,14 @@ public class VendorCreateAlertView extends JPanel {
         // Creating subject components
         JLabel alertSubjectLabel = new JLabel("Subject:");
         alertSubjectPanel.add(alertSubjectLabel, BorderLayout.NORTH);
-        JTextField alertSubjectField = new JTextField();
+        alertSubjectField = new JTextField();
         alertSubjectField.setColumns(20);
         alertSubjectPanel.add(alertSubjectField, BorderLayout.CENTER);
 
         // Creating body components
         JLabel alertBodyLabel = new JLabel("Body:");
         alertBodyPanel.add(alertBodyLabel, BorderLayout.NORTH);
-        JEditorPane alertBodyPane = new JEditorPane();
+        alertBodyPane = new JEditorPane();
         alertBodyPanel.add(alertBodyPane, BorderLayout.CENTER);
 
         // Buttons for creating an alert
@@ -102,6 +105,14 @@ public class VendorCreateAlertView extends JPanel {
                 System.out.println(rs.getInt(1)+"  "+rs.getString(2)+"  "
                         +rs.getString(3)+"  "+rs.getTime(4));
             conn.close();
+
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(),
+                    "Alert successfully sent.",
+                    "Alert Sent",
+                    JOptionPane.PLAIN_MESSAGE);
+            // Erasing text from subject and body fields
+            alertSubjectField.setText("");
+            alertBodyPane.setText("");
         } catch(Exception e) {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(),
                     "Unable to send alert.",

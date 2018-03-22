@@ -27,7 +27,6 @@ public class ManagerView extends JPanel {
 
         // Importing alerts from the database
         alertsView = new ManagerAlertsView();
-        alertDetailView = new ManagerAlertDetailView();
 
         // Sub-panel to hold label and log out button
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -82,13 +81,14 @@ public class ManagerView extends JPanel {
 
             // Putting information from rs into the alert ArrayList
             int index = 0;
-            while(rs.next()) {
+            while (rs.next()) {
                 Alert temp = new Alert(); // temp alert to hold current alert being imported
 
-                /*
-                Getting information from rs
-                columnIndex: 1-id, 2-subject, 3-body, 4-date
-                 */
+            /*
+            Getting information from rs
+            columnIndex: 1-id, 2-subject, 3-body, 4-date
+             */
+                temp.setId(rs.getInt(1));
                 temp.setSubject(rs.getString(2));
                 temp.setBody(rs.getString(3));
                 temp.setTime(rs.getTimestamp(4));
@@ -127,7 +127,6 @@ public class ManagerView extends JPanel {
      */
     public static void changeToAlertView() {
         alertsView = new ManagerAlertsView();
-        alertDetailView = new ManagerAlertDetailView();
         tabbedPane.setComponentAt(2, alertsView);
         confirmOrderView.repaint();
     }
@@ -136,7 +135,6 @@ public class ManagerView extends JPanel {
     Changes view of alert view to alert detail view
      */
     public static void changeToAlertDetailView() {
-        alertsView = new ManagerAlertsView();
         alertDetailView = new ManagerAlertDetailView();
         tabbedPane.setComponentAt(2, alertDetailView);
         orderView.repaint();
