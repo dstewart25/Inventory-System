@@ -1,6 +1,7 @@
 import java.sql.Timestamp;
 
 public class Alert {
+    private int id;
     private String subject;
     private String body;
     private Timestamp time;
@@ -9,6 +10,14 @@ public class Alert {
         subject = null;
         body = null;
         time = null;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getSubject() {
