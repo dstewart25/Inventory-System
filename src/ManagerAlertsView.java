@@ -65,7 +65,7 @@ public class ManagerAlertsView extends JPanel {
         if (!ManagerView.alerts.isEmpty()) {
             for (int i = 0; i < ManagerView.alerts.size(); i++) {
                 data[i][0] = ManagerView.alerts.get(i).getSubject();
-                data[i][1] = ManagerView.alerts.get(i).getTime().toString();
+                data[i][1] = ManagerView.alerts.get(i).getFormattedTime();
             }
         }
         alertsTableModel = new DefaultTableModel(data, column) {
