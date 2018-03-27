@@ -37,8 +37,12 @@ public class ManagerAlertsView extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!ManagerView.alerts.isEmpty()) {
-                    alertIndex = alertsTable.getSelectedRow();
-                    ManagerView.changeToAlertDetailView();
+                    try {
+                        alertIndex = alertsTable.getSelectedRow();
+                        ManagerView.changeToAlertDetailView();
+                    } catch (ArrayIndexOutOfBoundsException e1) {
+                        System.out.println(e1);
+                    }
                 }
             }
         });
@@ -49,8 +53,12 @@ public class ManagerAlertsView extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!ManagerView.alerts.isEmpty()) {
-                    alertIndex = alertsTable.getSelectedRow();
-                    deleteSelectedAlert();
+                    try {
+                        alertIndex = alertsTable.getSelectedRow();
+                        deleteSelectedAlert();
+                    } catch (ArrayIndexOutOfBoundsException e1) {
+                        System.out.println(e1);
+                    }
                 }
             }
         });
