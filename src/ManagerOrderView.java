@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 
 public class ManagerOrderView extends JPanel {
     // Used to view order information
-    private static int numOfColumns = 0;
     private final String[] column = new String[] {"Name", "Pkg Size", "Current Inventory", "Amount", "Delete?"}; // Holds names of columns in the table
 
     public ManagerOrderView() {
@@ -24,7 +23,6 @@ public class ManagerOrderView extends JPanel {
         newItemButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addAColumn();
             }
         });
         JButton orderButton = new JButton("Order");
@@ -50,15 +48,5 @@ public class ManagerOrderView extends JPanel {
 
         add(orderScrollPane, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
-    }
-
-    /*
-    Used to add a column to the table holding order information
-    Couldn't figure this shit out but I'm working on it (it's a lot more confusing than it seems
-     */
-    private void addAColumn() {
-        numOfColumns++;
-
-        System.out.println(numOfColumns);
     }
 }

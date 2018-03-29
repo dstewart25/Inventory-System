@@ -10,13 +10,11 @@ public class ManagerView extends JPanel {
     private static JTabbedPane tabbedPane;
     private static ManagerOrderView orderView = new ManagerOrderView();
     private static ManagerConfirmOrderView confirmOrderView = new ManagerConfirmOrderView();
-    private static ManagerAlertsView alertsView;
-    private static ManagerAlertDetailView alertDetailView;
-    public static ArrayList<Alert> alerts = new ArrayList<>();
+    public static ArrayList<Alert> messagesToManager = new ArrayList<>();
+    public static ArrayList<Product> products = new ArrayList<>();
 
     public ManagerView(JFrame frame) {
         this.frame = frame;
-        frame.setSize(600,400);
         setLayout(new BorderLayout());
         initialize();
         setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
@@ -24,10 +22,6 @@ public class ManagerView extends JPanel {
 
     private void initialize() {
         frame.setTitle("MFIS");
-
-        // Importing alerts from the database
-        alertsView = new ManagerAlertsView();
-        alertDetailView = new ManagerAlertDetailView();
 
         // Sub-panel to hold label and log out button
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -51,10 +45,11 @@ public class ManagerView extends JPanel {
 
         // Setting up tabbed pane
         ManagerInventoryView inventoryView = new ManagerInventoryView();
+        ManagerAlertsView alertsView = new ManagerAlertsView();
         tabbedPane = new JTabbedPane();
         tabbedPane.add("Order", orderView);
-        tabbedPane.add("View Inventory", inventoryView);
-        tabbedPane.add("View Alerts", alertsView);
+        tabbedPane.add("Inventory", inventoryView);
+        tabbedPane.add("Messages", alertsView);
 
         // add sub-panels to the main panel
         add(topPanel, BorderLayout.NORTH);
@@ -65,8 +60,8 @@ public class ManagerView extends JPanel {
     Connects to database and imports information from the alert table
     Then puts the information into an ArrayList of Alert
      */
-    public static void importAlertsFromDatabase() {
-        alerts = new ArrayList<>(); // Resetting alerts so there are no duplicates
+    public static void importMessagesToManager() {
+        messagesToManager = new ArrayList<>(); // Resetting alerts so there are no duplicates
 
         try {
             // Connecting to database
@@ -77,31 +72,71 @@ public class ManagerView extends JPanel {
                     "root","password");
             Statement statement = conn.createStatement();
 
+            // Import messagesToManager table information into rsManager
+            ResultSet rsManager = statement.executeQuery("select * from messagesToManager");
+
+            // Putting information from rsManager into the messagesToManager ArrayList
+            int index = 0;
+            while (rsManager.next()) {
+                Alert tempManager = new Alert(); // temp alert to hold current alert being imported
+
+            /*
+            Getting information from rs
+            columnIndex: 1-id, 2-subject, 3-body, 4-date
+             */
+                tempManager.setId(rsManager.getInt(1));
+                tempManager.setSubject(rsManager.getString(2));
+                tempManager.setBody(rsManager.getString(3));
+                tempManager.setTime(rsManager.getTimestamp(4));
+
+                //
+                messagesToManager.add(index, tempManager);
+            }
+
+            conn.close();
+        } catch(Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    /*
+    Connects to database and imports information from the product table
+    Then puts the information into an ArrayList of type Product
+     */
+    public static void importProductsFromDatabase() {
+        products = new ArrayList<>();
+        try {
+            // Connecting to database
+            Class.forName("com.mysql.jdbc.Driver");
+            DriverManager.setLoginTimeout(10);
+            Connection conn = DriverManager.getConnection(
+                    "jdbc:mysql://mfis-db-instance.ch7fymzvlb8l.us-east-1.rds.amazonaws.com:3306/MFIS_DB",
+                    "root","password");
+            Statement statement = conn.createStatement();
+
             // Import alert table information into rs
-            ResultSet rs = statement.executeQuery("select * from alert");
+            ResultSet rs = statement.executeQuery("select * from products");
 
             // Putting information from rs into the alert ArrayList
             int index = 0;
-            while(rs.next()) {
-                Alert temp = new Alert(); // temp alert to hold current alert being imported
+            while (rs.next()) {
+                Product temp = new Product(); // temp alert to hold current alert being imported
 
                 /*
                 Getting information from rs
                 columnIndex: 1-id, 2-subject, 3-body, 4-date
                  */
-                temp.setSubject(rs.getString(2));
-                temp.setBody(rs.getString(3));
-                temp.setTime(rs.getTimestamp(4));
+                temp.setUpc(rs.getString(1));
+                temp.setName(rs.getString(2));
+                temp.setPkgSize(rs.getInt(3));
+                temp.setPrice(rs.getDouble(4));
+                temp.setProdType(rs.getString(5));
+                temp.setRequired(rs.getBoolean(6));
 
-                //
-                alerts.add(index, temp);
+                products.add(index, temp);
             }
             conn.close();
         } catch(Exception e) {
-            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(),
-                    "Unable to login.",
-                    "Database Error",
-                    JOptionPane.WARNING_MESSAGE);
             System.out.println(e);
         }
     }
@@ -119,26 +154,6 @@ public class ManagerView extends JPanel {
      */
     public static void changeToOrder() {
         tabbedPane.setComponentAt(0, orderView);
-        orderView.repaint();
-    }
-
-    /*
-    Changes view of alert detail view to alert view
-     */
-    public static void changeToAlertView() {
-        alertsView = new ManagerAlertsView();
-        alertDetailView = new ManagerAlertDetailView();
-        tabbedPane.setComponentAt(2, alertsView);
-        confirmOrderView.repaint();
-    }
-
-    /*
-    Changes view of alert view to alert detail view
-     */
-    public static void changeToAlertDetailView() {
-        alertsView = new ManagerAlertsView();
-        alertDetailView = new ManagerAlertDetailView();
-        tabbedPane.setComponentAt(2, alertDetailView);
         orderView.repaint();
     }
 }
