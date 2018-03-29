@@ -207,13 +207,15 @@ public class LoginScreen extends JLayeredPane {
                 while (rs_manager.next()) {
                     if (rs_manager.getString(1).toLowerCase().equals(username.toLowerCase()) &&
                             rs_manager.getString(2).equals(password)) {
-                        ManagerView.importAlertsFromDatabase();
+                        ManagerView.importMessagesToManager();
+                        ManagerView.importProductsFromDatabase();
                         conn.close();
 
                         // Login to inventory screen for manager
                         frame.getContentPane().removeAll();
                         frame.getContentPane().add(new ManagerView(frame));
                         frame.pack();
+                        frame.setSize(800,600);
                         frame.getContentPane().setVisible(true);
                         return 1;
                     }
@@ -224,17 +226,23 @@ public class LoginScreen extends JLayeredPane {
                 while (rs_vendor.next()) {
                     if (rs_vendor.getString(1).toLowerCase().equals(username.toLowerCase()) &&
                             rs_vendor.getString(2).equals(password)) {
+                        VendorView.importMessagesToVendor();
                         conn.close();
 
                         // Login to inventory screen for manager
                         frame.getContentPane().removeAll();
                         frame.getContentPane().add(new VendorView(frame));
                         frame.pack();
+                        frame.setSize(800,600);
                         frame.getContentPane().setVisible(true);
                         return 1;
                     }
                 }
             } catch (Exception e) {
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(),
+                        "Unable to login.",
+                        "Database Error",
+                        JOptionPane.WARNING_MESSAGE);
                 System.out.println(e);
             } finally {
                 LoginScreen.loader.setVisible(false);
@@ -259,8 +267,9 @@ public class LoginScreen extends JLayeredPane {
         repaint();
     }
 
+    /*
     private void removeLoader() {
         remove(loader);
         repaint();
-    }
+    }*/
 }
