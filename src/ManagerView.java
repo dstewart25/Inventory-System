@@ -46,9 +46,11 @@ public class ManagerView extends JPanel {
         // Setting up tabbed pane
         ManagerInventoryView inventoryView = new ManagerInventoryView();
         ManagerAlertsView alertsView = new ManagerAlertsView();
+        SalesView salesView = new SalesView();
         tabbedPane = new JTabbedPane();
         tabbedPane.add("Order", orderView);
         tabbedPane.add("Inventory", inventoryView);
+        tabbedPane.add("Sales",salesView);
         tabbedPane.add("Messages", alertsView);
 
         // add sub-panels to the main panel
