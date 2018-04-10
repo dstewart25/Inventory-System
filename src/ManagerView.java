@@ -50,8 +50,8 @@ public class ManagerView extends JPanel {
         tabbedPane = new JTabbedPane();
         tabbedPane.add("Order", orderView);
         tabbedPane.add("Inventory", inventoryView);
-        tabbedPane.add("Messages", alertsView);
         tabbedPane.add("Sales",salesView);
+        tabbedPane.add("Messages", alertsView);
 
         // add sub-panels to the main panel
         add(topPanel, BorderLayout.NORTH);

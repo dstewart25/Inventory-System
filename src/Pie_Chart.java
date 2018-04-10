@@ -8,17 +8,21 @@ import javafx.scene.control.ScrollPane;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class Pie_Chart extends JPanel{
     private ObservableList<PieChart.Data> details =   FXCollections.observableArrayList();
     private PieChart pieChart;
 
-    public Pie_Chart(String viewBy){
+    public Pie_Chart(String viewBy,String daTe){
         setLayout( new GridLayout(2,3,10,10));
 
         JFXPanel dataPanel = new JFXPanel();
 
-        setSalesData(viewBy);
+        setSalesData(viewBy,daTe);
 
         pieChart = new PieChart();
         pieChart.setData(details);
@@ -36,30 +40,59 @@ public class Pie_Chart extends JPanel{
     }
 
     //Sets sales data based upon the view parameter(Day,Week,Month,Year,Specific)
-    private void setSalesData(String view){
+    private void setSalesData(String view,String date){
         switch (view){
             case "Day":
-                setChart(25,25,25,25);
+                setChart("Day",date);
                 break;
             case "Week":
-                setChart(15,35,25,25);
+                setChart("Week",date);
                 break;
             case "Month":
-                setChart(25,25,45,5);
+                setChart("Month",date);
                 break;
             case "Year":
-                setChart(15,25,35,25);
+                setChart("Year",date);
                 break;
             case "Specific":
-                setChart(25,25,25,25);
+                setChart("Specific",date);
                 break;
         }
     }
 
-    private void setChart(double f, double b, double t, double m){
-        details.addAll(new PieChart.Data("Food", f),
-                new PieChart.Data("Beverages", b),
-                new PieChart.Data("Tobacco", t),
-                new PieChart.Data("Miscellaneous", m));
+    private void setChart(String param,String Date){
+        //Date format: Mon Apr 16 19:25:54 EDT 2018
+
+        //percentage of total sales
+        double foodPiece=25;
+        double beveragePiece=25;
+        double tobaccoPiece=25;
+        double miscPiece=25;
+        String temp=param;
+        String temp2=Date;
+
+        /**Grab the data from the DB and reassign the chart piece values above
+         **param and Date will be passed as search parameters
+        try {
+            // Connecting to database
+            Class.forName("com.mysql.jdbc.Driver");
+            DriverManager.setLoginTimeout(10);
+            Connection conn = DriverManager.getConnection(
+                    "jdbc:mysql://mfis-db-instance.ch7fymzvlb8l.us-east-1.rds.amazonaws.com:3306/MFIS_DB",
+                    "root", "password");
+            Statement statement = conn.createStatement();
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        **/
+
+        details.addAll(new PieChart.Data("Food", foodPiece),
+                new PieChart.Data("Beverages", beveragePiece),
+                new PieChart.Data("Tobacco", tobaccoPiece),
+                new PieChart.Data("Miscellaneous", miscPiece));
     }
+
 }
