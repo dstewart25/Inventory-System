@@ -24,7 +24,7 @@ public class ManagerInventoryView extends JPanel {
      */
     private void initialize() {
         // Setting up combo box to show different options for categories
-        String[] strCategories = {"Popular", "Required", "Candy", "Drinks", "Tobacco"};
+        String[] strCategories = {"Popular", "Required", "Food", "Beverages", "Tobacco","Miscellaneous"};
         JComboBox categories = new JComboBox(strCategories);
         categories.addActionListener(new ActionListener() {
             @Override

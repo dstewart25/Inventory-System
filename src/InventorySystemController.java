@@ -26,6 +26,6 @@ public class InventorySystemController extends JFrame {
         pack();
         getContentPane().setVisible(true);
         myFrame.setSize(400,275);
-        //myFrame.setLocationRelativeTo(null);
+        myFrame.setLocationRelativeTo(null);
     }
 }
