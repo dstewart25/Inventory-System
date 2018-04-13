@@ -5,6 +5,7 @@ public class Product {
     double price;
     String prodType;
     boolean isRequired;
+    int inventoryLevel;
 
     public Product() {
         upc = name = prodType = null;
@@ -59,5 +60,13 @@ public class Product {
 
     public void setRequired(boolean required) {
         isRequired = required;
+    }
+
+    public void setInventoryLevel(int inventoryLevel) {
+        this.inventoryLevel = inventoryLevel;
+    }
+
+    public int getInventoryLevel() {
+        return inventoryLevel;
     }
 }

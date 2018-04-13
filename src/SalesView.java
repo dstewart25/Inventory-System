@@ -12,13 +12,8 @@ import java.util.Date;
 import java.util.Properties;
 
 public class SalesView extends JPanel {
-    private JComboBox viewByBox;
-    private JPanel combo;
-    private JLabel view;
-    private JPanel chart;
-    private JPanel sales=new JPanel(new GridLayout(5,1));
-    private String initialTime= String.valueOf(LocalDateTime.now());
-    private Pie_Chart salesChart=new Pie_Chart("Day",initialTime);
+    private static String initialTime = String.valueOf(LocalDateTime.now());
+    private static Pie_Chart salesChart = new Pie_Chart("Day",initialTime);
 
     public SalesView(){
         setLayout(new BorderLayout());
@@ -29,18 +24,20 @@ public class SalesView extends JPanel {
         String [] viewBy = {"Today","Week to date","Month to date",
                 "Year to date","Specific Day"};
 
-        viewByBox = new JComboBox(viewBy);
-        combo = new JPanel(new FlowLayout());
-        view = new JLabel("View By:");
+        JPanel sales = new JPanel(new GridLayout(5,1));
+
+        JComboBox viewByBox = new JComboBox(viewBy);
+        JPanel combo = new JPanel(new FlowLayout());
+        JLabel view = new JLabel("View By:");
         view.setFont(new Font("Monospaced",Font.BOLD,20));
         combo.add(view);
         combo.add(viewByBox);
 
-        chart= new JPanel();
+        JPanel chart = new JPanel();
         chart.add(salesChart);
 
         viewByBox.addActionListener(e -> {
-            String time= String.valueOf(LocalDateTime.now());
+            String time = String.valueOf(LocalDateTime.now());
             //time format: Mon Apr 16 19:25:54 EDT 2018
             String selected = (String) viewByBox.getSelectedItem();
             switch (selected){

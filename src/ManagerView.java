@@ -50,7 +50,7 @@ public class ManagerView extends JPanel {
         tabbedPane = new JTabbedPane();
         tabbedPane.add("Order", orderView);
         tabbedPane.add("Inventory", inventoryView);
-        tabbedPane.add("Sales",salesView);
+        tabbedPane.add("Sales", salesView);
         tabbedPane.add("Messages", alertsView);
 
         // add sub-panels to the main panel
@@ -78,7 +78,7 @@ public class ManagerView extends JPanel {
             ResultSet rsManager = statement.executeQuery("select * from messagesToManager");
 
             // Putting information from rsManager into the messagesToManager ArrayList
-            int index = 0;
+            //int index = 0;
             while (rsManager.next()) {
                 Alert tempManager = new Alert(); // temp alert to hold current alert being imported
 
@@ -92,7 +92,7 @@ public class ManagerView extends JPanel {
                 tempManager.setTime(rsManager.getTimestamp(4));
 
                 //
-                messagesToManager.add(index, tempManager);
+                messagesToManager.add(tempManager);
             }
 
             conn.close();
@@ -117,10 +117,12 @@ public class ManagerView extends JPanel {
             Statement statement = conn.createStatement();
 
             // Import alert table information into rs
-            ResultSet rs = statement.executeQuery("select * from products");
+            ResultSet rs = statement.executeQuery("select p.*, l.current_level" +
+                    " from products p" +
+                    " inner join inv_levels l ON p.upc = l.upc");
 
             // Putting information from rs into the alert ArrayList
-            int index = 0;
+            //int index = 0;
             while (rs.next()) {
                 Product temp = new Product(); // temp alert to hold current alert being imported
 
@@ -134,8 +136,10 @@ public class ManagerView extends JPanel {
                 temp.setPrice(rs.getDouble(4));
                 temp.setProdType(rs.getString(5));
                 temp.setRequired(rs.getBoolean(6));
+                temp.setInventoryLevel(rs.getInt(7));
 
-                products.add(index, temp);
+
+                products.add(temp);
             }
             conn.close();
         } catch(Exception e) {
