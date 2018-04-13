@@ -14,11 +14,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Pie_Chart extends JPanel{
-    private ObservableList<PieChart.Data> details =   FXCollections.observableArrayList();
-    private PieChart pieChart;
+    private static ObservableList<PieChart.Data> details = FXCollections.observableArrayList();
+    private static PieChart pieChart;
 
     public Pie_Chart(String viewBy,String daTe){
-        setLayout( new GridLayout(2,3,10,10));
+        setLayout(new GridLayout(2,3,10,10));
 
         JFXPanel dataPanel = new JFXPanel();
 
