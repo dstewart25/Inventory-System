@@ -211,6 +211,7 @@ public class LoginScreen extends JLayeredPane {
                             rs_manager.getString(2).equals(password)) {
                         ManagerView.importMessagesToManager();
                         ManagerView.importProductsFromDatabase();
+                        ManagerView.importOrdersFromDatabase();
                         conn.close();
 
                         // Login to inventory screen for manager

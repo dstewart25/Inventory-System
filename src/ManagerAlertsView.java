@@ -7,7 +7,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.*;
 
-public class ManagerAlertsView extends JLayeredPane {
+public class ManagerAlertsView extends JPanel {
     private DefaultTableModel alertsTableModel;
     private JTable alertsTable;
     public static int alertIndex;
@@ -242,6 +242,7 @@ public class ManagerAlertsView extends JLayeredPane {
         add(createMessagePanel, BorderLayout.CENTER);
         showingViewCreate = true;
         repaint();
+        revalidate();
     }
 
     private void showViewMessages() {
@@ -253,6 +254,7 @@ public class ManagerAlertsView extends JLayeredPane {
          */
         importAlertsToTable(); // Importing alerts from an array of all the alerts
         alertsTable = new JTable(alertsTableModel);
+        alertsTable.setShowGrid(true);
         JScrollPane alertScrollPane = new JScrollPane(alertsTable,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -317,6 +319,7 @@ public class ManagerAlertsView extends JLayeredPane {
         add(viewMessagesPanel, BorderLayout.CENTER);
         showingViewMessages = true;
         repaint();
+        revalidate();
     }
 
     private void showViewMessageDetails() {
@@ -367,13 +370,16 @@ public class ManagerAlertsView extends JLayeredPane {
         add(viewMessageDetailPanel, BorderLayout.CENTER);
         showingViewMessageDetail = true;
         repaint();
+        revalidate();
     }
 
     private void showLoader() {
         try {
             add(loader);
-            moveToFront(loader);
+            //moveToFront(loader);
+            loader.setVisible(false);
             repaint();
+            revalidate();
         } catch (IllegalArgumentException e) {
             System.out.println(e);
         }

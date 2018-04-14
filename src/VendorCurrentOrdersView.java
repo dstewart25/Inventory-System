@@ -31,6 +31,7 @@ public class VendorCurrentOrdersView extends JPanel {
         String[][] data = new String[0][column.length]; // Holds information for columns
         DefaultTableModel orderTableModel = new DefaultTableModel(data, column);
         JTable orderTable = new JTable(orderTableModel);
+        orderTable.setShowGrid(true);
         JScrollPane orderScrollPane = new JScrollPane(orderTable,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);

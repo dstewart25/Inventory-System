@@ -64,6 +64,7 @@ public class VendorAlertsView extends JLayeredPane {
          */
         importAlertsToTable(); // Importing alerts from an array of all the alerts
         alertsTable = new JTable(alertsTableModel);
+        alertsTable.setShowGrid(true);
         JScrollPane alertScrollPane = new JScrollPane(alertsTable,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
