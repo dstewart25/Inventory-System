@@ -14,12 +14,16 @@ import java.util.*;
 /*
 Shows the inventory levels for the managers to view
  */
-public class ManagerInventoryView extends JLayeredPane {
+public class ManagerInventoryView extends JPanel {
     private DefaultTableModel tableModel;
     private HashMap<String, String> newInvLevels = new HashMap<>();
+    private JTable inventoryTable;
+    private JScrollPane scrollPane;
+    private int categoryIndex;
 
-    public ManagerInventoryView() {
+    public ManagerInventoryView(int categoryIndex) {
         setLayout(new BorderLayout());
+        this.categoryIndex = categoryIndex;
         initialize(); // Initializing the view
     }
 
@@ -31,11 +35,29 @@ public class ManagerInventoryView extends JLayeredPane {
         JPanel buttonPanel = new JPanel(new BorderLayout());
 
         // Setting up combo box to show different options for categories
-        String[] strCategories = {"Popular", "Required", "Food", "Non-Alcoholic", "Alcohol"};
+        String[] strCategories = {"All", "Popular", "Required", "Food", "Non-Alcoholic", "Alcohol"};
         JComboBox categories = new JComboBox(strCategories);
+        categories.setSelectedIndex(categoryIndex);
         categories.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int selectedIndex = categories.getSelectedIndex();
+                switch (selectedIndex) {
+                    case 0: //  All Products
+                        ManagerView.changeToAllCategory();
+                        break;
+                    case 3: // Food
+                        ManagerView.changeToFoodCategory();
+                        break;
+                    case 4: // Non-Alcoholic
+                        ManagerView.changeToNonAlcoholicCategory();
+                        break;
+                    case 5: // Alcohol
+                        ManagerView.changeToAlcoholicCategory();
+                        break;
+                    default:
+                        break;
+                }
             }
         });
 
@@ -54,9 +76,24 @@ public class ManagerInventoryView extends JLayeredPane {
         buttonPanel.add(saveButton, BorderLayout.EAST);
 
         // Setting up table to show inventory information
-        importProductsToTable();
-        JTable inventoryTable = new JTable(tableModel);
-        JScrollPane scrollPane = new JScrollPane(inventoryTable,
+        switch (categoryIndex) {
+            case 0: //  All Products
+                importAllProducts();
+                break;
+            case 3: // Food
+                importFoodProducts();
+                break;
+            case 4: // Non-Alcoholic
+                importNonAlcoholicProducts();
+                break;
+            case 5: // Alcohol
+                importAlcoholicProducts();
+                break;
+            default:
+                break;
+        }
+        inventoryTable = new JTable(tableModel);
+        scrollPane = new JScrollPane(inventoryTable,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setPreferredSize(new Dimension(600, 350));
@@ -81,7 +118,7 @@ public class ManagerInventoryView extends JLayeredPane {
     This method is used to get information from the database and
     use it to populate the table with said information
      */
-    private void importProductsToTable() {
+    private void importAllProducts() {
         String[] column = {"Name", "Pkg Size", "Current Inventory"}; // Holds names of columns
         String[][] data = new String[ManagerView.products.size()][column.length]; // Holds information for columns
 
@@ -90,6 +127,114 @@ public class ManagerInventoryView extends JLayeredPane {
                 data[i][0] = ManagerView.products.get(i).getName();
                 data[i][1] = String.valueOf(ManagerView.products.get(i).getPkgSize());
                 data[i][2] = String.valueOf(ManagerView.products.get(i).getInventoryLevel());
+            }
+        }
+        tableModel = new DefaultTableModel(data, column) {
+            @Override
+            public boolean isCellEditable(int row, int col) {
+                switch (col) {
+                    case 2:
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        };
+    }
+
+    private void importFoodProducts() {
+        String[] column = {"Name", "Pkg Size", "Current Inventory"}; // Holds names of columns
+        String[][] data = {{"Invalid"},{"Input"},{"IDK man"}};
+        ArrayList<String> names = new ArrayList<>();
+        ArrayList<String> pkgSizes = new ArrayList<>();
+        ArrayList<String> invLevels = new ArrayList<>();
+
+        if (!ManagerView.products.isEmpty()) {
+            for (int i = 0; i < ManagerView.products.size(); i++) {
+                if (ManagerView.products.get(i).getProdType().equals("Food")) {
+                    names.add(ManagerView.products.get(i).getName());
+                    pkgSizes.add(String.valueOf(ManagerView.products.get(i).getPkgSize()));
+                    invLevels.add(String.valueOf(ManagerView.products.get(i).getInventoryLevel()));
+                }
+            }
+
+            data = new String[names.size()][column.length]; // Holds information for columns
+            for (int i=0; i<names.size(); i++) {
+                data[i][0] = names.get(i);
+                data[i][1] = pkgSizes.get(i);
+                data[i][2] = invLevels.get(i);
+            }
+        }
+        tableModel = new DefaultTableModel(data, column) {
+            @Override
+            public boolean isCellEditable(int row, int col) {
+                switch (col) {
+                    case 2:
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        };
+    }
+
+    private void importAlcoholicProducts() {
+        String[] column = {"Name", "Pkg Size", "Current Inventory"}; // Holds names of columns
+        String[][] data = {{"Invalid"},{"Input"},{"IDK man"}};
+        ArrayList<String> names = new ArrayList<>();
+        ArrayList<String> pkgSizes = new ArrayList<>();
+        ArrayList<String> invLevels = new ArrayList<>();
+
+        if (!ManagerView.products.isEmpty()) {
+            for (int i = 0; i < ManagerView.products.size(); i++) {
+                if (ManagerView.products.get(i).getProdType().equals("Alcohol")) {
+                    names.add(ManagerView.products.get(i).getName());
+                    pkgSizes.add(String.valueOf(ManagerView.products.get(i).getPkgSize()));
+                    invLevels.add(String.valueOf(ManagerView.products.get(i).getInventoryLevel()));
+                }
+            }
+
+            data = new String[names.size()][column.length]; // Holds information for columns
+            for (int i=0; i<names.size(); i++) {
+                data[i][0] = names.get(i);
+                data[i][1] = pkgSizes.get(i);
+                data[i][2] = invLevels.get(i);
+            }
+        }
+        tableModel = new DefaultTableModel(data, column) {
+            @Override
+            public boolean isCellEditable(int row, int col) {
+                switch (col) {
+                    case 2:
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        };
+    }
+
+    private void importNonAlcoholicProducts() {
+        String[] column = {"Name", "Pkg Size", "Current Inventory"}; // Holds names of columns
+        String[][] data = {{"Invalid"},{"Input"},{"IDK man"}};
+        ArrayList<String> names = new ArrayList<>();
+        ArrayList<String> pkgSizes = new ArrayList<>();
+        ArrayList<String> invLevels = new ArrayList<>();
+
+        if (!ManagerView.products.isEmpty()) {
+            for (int i = 0; i < ManagerView.products.size(); i++) {
+                if (ManagerView.products.get(i).getProdType().equals("Non-Alcoholic")) {
+                    names.add(ManagerView.products.get(i).getName());
+                    pkgSizes.add(String.valueOf(ManagerView.products.get(i).getPkgSize()));
+                    invLevels.add(String.valueOf(ManagerView.products.get(i).getInventoryLevel()));
+                }
+            }
+
+            data = new String[names.size()][column.length]; // Holds information for columns
+            for (int i=0; i<names.size(); i++) {
+                data[i][0] = names.get(i);
+                data[i][1] = pkgSizes.get(i);
+                data[i][2] = invLevels.get(i);
             }
         }
         tableModel = new DefaultTableModel(data, column) {
