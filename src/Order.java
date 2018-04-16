@@ -1,3 +1,7 @@
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -6,6 +10,7 @@ public class Order {
     String address;
     String companyName;
     HashMap<Product, Integer> products;
+    private Timestamp time;
     boolean confirmed;
     boolean delivered;
 
@@ -39,6 +44,23 @@ public class Order {
 
     public void setProducts(HashMap<Product, Integer> products) {
         this.products = products;
+    }
+
+    public Timestamp getTime() {
+        return time;
+    }
+
+    public String getFormattedTime() {
+        String year = new SimpleDateFormat("MMMMMMMMMM dd, yyyy").format(time);
+        String time = new SimpleDateFormat("HH:MM").format(this.time);
+        String convertedTime = LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm")).format(DateTimeFormatter.ofPattern("hh:mm a"));
+        if (convertedTime.startsWith("0"))
+            convertedTime = convertedTime.substring(1);
+        return year + " at " + convertedTime;
+    }
+
+    public void setTime(Timestamp time) {
+        this.time = time;
     }
 
     public boolean isConfirmed() {

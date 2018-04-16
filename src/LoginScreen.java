@@ -230,6 +230,8 @@ public class LoginScreen extends JLayeredPane {
                     if (rs_vendor.getString(1).toLowerCase().equals(username.toLowerCase()) &&
                             rs_vendor.getString(2).equals(password)) {
                         VendorView.importMessagesToVendor();
+                        VendorView.importProductsFromDatabase();
+                        VendorView.importOrdersFromDatabase();
                         conn.close();
 
                         // Login to inventory screen for manager

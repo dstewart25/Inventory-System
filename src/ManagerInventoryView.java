@@ -2,6 +2,11 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -92,7 +97,19 @@ public class ManagerInventoryView extends JPanel {
             default:
                 break;
         }
-        inventoryTable = new JTable(tableModel);
+        JTextField field = createTextField();
+        final TableCellEditor editor = new DefaultCellEditor(field);
+        inventoryTable = new JTable(tableModel) {
+            @Override
+            public TableCellEditor getCellEditor(int row, int col) {
+                int modelColumn = convertColumnIndexToModel(col);
+
+                if (modelColumn == 2)
+                    return editor;
+                else
+                    return super.getCellEditor(row, col);
+            }
+        };
         scrollPane = new JScrollPane(inventoryTable,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -293,5 +310,29 @@ public class ManagerInventoryView extends JPanel {
             System.out.println("Saved");
             return 1;
         }
+    }
+
+    private JTextField createTextField() {
+        final JTextField field = new JTextField();
+        ((AbstractDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int off, String str, AttributeSet attr)
+                    throws BadLocationException {
+                int length = field.getDocument().getLength();
+                if (length + str.length() <= 1) {
+                    fb.insertString(off, str.replaceAll("[^1-9]", ""), attr);  // remove non-digits
+                }
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int off, int len, String str, AttributeSet attr)
+                    throws BadLocationException {
+                int length = field.getDocument().getLength();
+                if (length + str.length() <= 1) {
+                    fb.replace(off, len, str.replaceAll("[^1-9]", ""), attr);  // remove non-digits
+                }
+            }
+        });
+        return field;
     }
 }

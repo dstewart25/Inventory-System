@@ -40,7 +40,9 @@ public class VendorAlertsView extends JLayeredPane {
         createMessage.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showCreateMessage();
+                if (!showingViewCreate) {
+                    showCreateMessage();
+                }
             }
         });
         JButton viewMessages = new JButton("View Messages");
@@ -48,7 +50,9 @@ public class VendorAlertsView extends JLayeredPane {
         viewMessages.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showViewMessages();
+                if (!showingViewMessages) {
+                    showViewMessages();
+                }
             }
         });
 
