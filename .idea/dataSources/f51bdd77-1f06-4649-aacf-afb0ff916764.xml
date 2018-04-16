@@ -964,187 +964,192 @@
       <DataType>varchar(50)|0</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="242" parent="228" name="confirmed">
+    <column id="242" parent="228" name="date">
       <Position>4</Position>
-      <DataType>tinyint(1)|0</DataType>
+      <DataType>timestamp|0</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="243" parent="228" name="delivered">
+    <column id="243" parent="228" name="confirmed">
       <Position>5</Position>
       <DataType>tinyint(1)|0</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="244" parent="228" name="PRIMARY">
+    <column id="244" parent="228" name="delivered">
+      <Position>6</Position>
+      <DataType>tinyint(1)|0</DataType>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <key id="245" parent="228" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>order_number</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="245" parent="229" name="id">
+    <column id="246" parent="229" name="id">
       <Position>1</Position>
       <DataType>smallint(5) unsigned|0</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="246" parent="229" name="subject">
+    <column id="247" parent="229" name="subject">
       <Position>2</Position>
       <DataType>varchar(100)|0</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="247" parent="229" name="body">
+    <column id="248" parent="229" name="body">
       <Position>3</Position>
       <DataType>text|0</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="248" parent="229" name="date">
+    <column id="249" parent="229" name="date">
       <Position>4</Position>
       <DataType>timestamp|0</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="249" parent="229" name="PRIMARY">
+    <key id="250" parent="229" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="250" parent="230" name="id">
+    <column id="251" parent="230" name="id">
       <Position>1</Position>
       <DataType>smallint(5) unsigned|0</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="251" parent="230" name="subject">
+    <column id="252" parent="230" name="subject">
       <Position>2</Position>
       <DataType>varchar(100)|0</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="252" parent="230" name="body">
+    <column id="253" parent="230" name="body">
       <Position>3</Position>
       <DataType>text|0</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="253" parent="230" name="date">
+    <column id="254" parent="230" name="date">
       <Position>4</Position>
       <DataType>timestamp|0</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="254" parent="230" name="PRIMARY">
+    <key id="255" parent="230" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="255" parent="231" name="id">
+    <column id="256" parent="231" name="id">
       <Position>1</Position>
       <DataType>smallint(5) unsigned|0</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="256" parent="231" name="order_number">
+    <column id="257" parent="231" name="order_number">
       <Position>2</Position>
       <DataType>smallint(5) unsigned|0</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="257" parent="231" name="upc">
+    <column id="258" parent="231" name="upc">
       <Position>3</Position>
       <DataType>varchar(20)|0</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="258" parent="231" name="amount">
+    <column id="259" parent="231" name="amount">
       <Position>4</Position>
       <DataType>smallint(6)|0</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="259" parent="231" name="fk_order_number">
+    <index id="260" parent="231" name="fk_order_number">
       <ColNames>order_number</ColNames>
     </index>
-    <index id="260" parent="231" name="fk_upc_order_products">
+    <index id="261" parent="231" name="fk_upc_order_products">
       <ColNames>upc</ColNames>
     </index>
-    <key id="261" parent="231" name="PRIMARY">
+    <key id="262" parent="231" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="262" parent="231" name="fk_order_number">
+    <foreign-key id="263" parent="231" name="fk_order_number">
       <ColNames>order_number</ColNames>
       <RefSchemaName>MFIS_DB</RefSchemaName>
       <RefTableName>inv_order</RefTableName>
       <RefColNames>order_number</RefColNames>
     </foreign-key>
-    <foreign-key id="263" parent="231" name="fk_upc_order_products">
+    <foreign-key id="264" parent="231" name="fk_upc_order_products">
       <ColNames>upc</ColNames>
       <RefSchemaName>MFIS_DB</RefSchemaName>
       <RefTableName>products</RefTableName>
       <RefColNames>upc</RefColNames>
     </foreign-key>
-    <column id="264" parent="232" name="upc">
+    <column id="265" parent="232" name="upc">
       <Position>1</Position>
       <DataType>varchar(20)|0</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>&apos;&apos;</DefaultExpression>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="265" parent="232" name="name">
+    <column id="266" parent="232" name="name">
       <Position>2</Position>
       <DataType>varchar(100)|0</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="266" parent="232" name="pkg_size">
+    <column id="267" parent="232" name="pkg_size">
       <Position>3</Position>
       <DataType>smallint(5) unsigned|0</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="267" parent="232" name="price">
+    <column id="268" parent="232" name="price">
       <Position>4</Position>
       <DataType>float(10,2)|0</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="268" parent="232" name="prod_type">
+    <column id="269" parent="232" name="prod_type">
       <Position>5</Position>
       <DataType>varchar(30)|0</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="269" parent="232" name="is_required">
+    <column id="270" parent="232" name="is_required">
       <Position>6</Position>
       <DataType>tinyint(1)|0</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="270" parent="232" name="PRIMARY">
+    <key id="271" parent="232" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>upc</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="271" parent="233" name="username_manager">
+    <column id="272" parent="233" name="username_manager">
       <Position>1</Position>
       <DataType>varchar(20)|0</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>&apos;&apos;</DefaultExpression>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="272" parent="233" name="password">
+    <column id="273" parent="233" name="password">
       <Position>2</Position>
       <DataType>varchar(20)|0</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="273" parent="233" name="PRIMARY">
+    <key id="274" parent="233" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>username_manager</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="274" parent="234" name="username_vendor">
+    <column id="275" parent="234" name="username_vendor">
       <Position>1</Position>
       <DataType>varchar(20)|0</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>&apos;&apos;</DefaultExpression>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="275" parent="234" name="password">
+    <column id="276" parent="234" name="password">
       <Position>2</Position>
       <DataType>varchar(20)|0</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="276" parent="234" name="PRIMARY">
+    <key id="277" parent="234" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>username_vendor</ColNames>
       <Primary>1</Primary>

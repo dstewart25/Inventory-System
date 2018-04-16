@@ -5,6 +5,8 @@ import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class ManagerView extends JPanel {
     private JFrame frame;
@@ -170,7 +172,7 @@ public class ManagerView extends JPanel {
     }
 
     public static void importOrdersFromDatabase() {
-        products = new ArrayList<>();
+        orders = new ArrayList<>();
         try {
             // Connecting to database
             Class.forName("com.mysql.jdbc.Driver");
@@ -195,20 +197,24 @@ public class ManagerView extends JPanel {
                 temp.setOrderNumber(rs.getInt(1));
                 temp.setAddress(rs.getString(2));
                 temp.setCompanyName(rs.getString(3));
-                temp.setConfirmed(rs.getBoolean(4));
-                temp.setDelivered(rs.getBoolean(5));
+                temp.setTime(rs.getTimestamp(4));
+                temp.setConfirmed(rs.getBoolean(5));
+                temp.setDelivered(rs.getBoolean(6));
 
-                ResultSet rs2 = statement2.executeQuery("select * from order_products " +
-                        "inner join inv_order io ON order_products.order_number = io.order_number " +
+                ResultSet rs2 = statement2.executeQuery("select op.upc, op.amount from order_products op " +
+                        "inner join inv_order io ON op.order_number = io.order_number " +
                         "where io.order_number=" + temp.getOrderNumber() +";");
                 HashMap<Product, Integer> temp2 = new HashMap<>();
+                // Getting product upc and amount where order numbers are the same
                 while (rs2.next()) {
                     for (int i=0; i<products.size(); i++) {
-                        if (products.get(i).getUpc().equals(rs.getString(1))) {
-                            temp2.put(products.get(i), rs.getInt(3));
+                        if (products.get(i).getUpc().equals(rs2.getString(1))) {
+                            temp2.put(products.get(i), rs2.getInt(2));
                         }
                     }
                 }
+
+                temp.setProducts(temp2);
 
                 orders.add(temp);
             }

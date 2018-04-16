@@ -39,8 +39,9 @@ public class ManagerAlertsView extends JPanel {
         createMessage.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showCreateMessage();
-                showingViewCreate = true;
+                if (!showingViewCreate) {
+                    showCreateMessage();
+                }
             }
         });
         JButton viewMessages = new JButton("View Messages");
@@ -48,8 +49,9 @@ public class ManagerAlertsView extends JPanel {
         viewMessages.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showViewMessages();
-                showingViewCreate = false;
+                if (!showingViewMessages) {
+                    showViewMessages();
+                }
             }
         });
 

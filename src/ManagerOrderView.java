@@ -1,5 +1,10 @@
+import sun.rmi.runtime.Log;
+
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -16,10 +21,12 @@ public class ManagerOrderView extends JPanel {
     private JPanel newItemPanel;
     private JPanel pastOrdersPanel;
     private JPanel confirmNewOrderPanel;
+    private JPanel orderDetailPanel;
     private boolean showingCreateNewOrder = false;
     private boolean showingViewPastOrders = false;
     private boolean showingConfirmNewOrder = false;
     private boolean showingAddNewItem = false;
+    private boolean showingOrderDetail = false;
 
     // Holding information for this gas station
     private String address = "1234 Gas Station Blvd, Fort Myers, FL 33928";
@@ -32,6 +39,7 @@ public class ManagerOrderView extends JPanel {
     // Information for orders
     private DefaultTableModel orderTableModel;
     private DefaultTableModel pastOrderTableModel;
+    private JComboBox itemComboBox = new JComboBox();
 
     // Holds item names for inputting a new item
     private ArrayList<String> items;
@@ -53,7 +61,9 @@ public class ManagerOrderView extends JPanel {
         newOrderButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showCreateNewOrder();
+                if (!showingCreateNewOrder) {
+                    showCreateNewOrder();
+                }
             }
         });
         orderOptionsPanel.add(newOrderButton);
@@ -61,7 +71,9 @@ public class ManagerOrderView extends JPanel {
         pastOrdersButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showViewPastOrders();
+                if (!showingViewPastOrders) {
+                    showViewPastOrders();
+                }
             }
         });
         orderOptionsPanel.add(pastOrdersButton);
@@ -76,7 +88,33 @@ public class ManagerOrderView extends JPanel {
         JPanel buttonPanel = new JPanel(new BorderLayout());
         JPanel leftButtonPanel = new JPanel(new GridLayout(1,3));
         importOrderInformation();
-        JTable orderTable = new JTable(orderTableModel);
+        JTextField field = createTextField();
+        final TableCellEditor editor = new DefaultCellEditor(field);
+        JTable orderTable = new JTable(orderTableModel) {
+            @Override
+            public TableCellEditor getCellEditor(int row, int col) {
+                int modelColumn = convertColumnIndexToModel(col);
+
+                if (modelColumn == 3)
+                    return editor;
+                else
+                    return super.getCellEditor(row, col);
+            }
+        };
+        orderTable.getColumnModel().getColumn(0).setMinWidth(200);
+        orderTableModel.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                // Changing saved amount from table
+                //System.out.println(orderTable.getValueAt(e.getLastRow(), e.getColumn()));
+                for (Map.Entry<Product, Integer> entry : orderProducts.entrySet()) {
+                    if (entry.getKey().getName().equals(orderTable.getValueAt(e.getLastRow(), 0))) {
+                        orderProducts.replace(entry.getKey(), Integer.valueOf(String.valueOf(orderTable.getValueAt(e.getLastRow(), e.getColumn()))));
+                        //System.out.println("success");
+                    }
+                }
+            }
+        });
 
         // New Item and Order buttons
         JButton newItemButton = new JButton("New Item");
@@ -156,6 +194,10 @@ public class ManagerOrderView extends JPanel {
             remove(newOrderPanel);
             showingCreateNewOrder = false;
         }
+        if (showingOrderDetail) {
+            remove(orderDetailPanel);
+            showingOrderDetail = false;
+        }
         add(newOrderPanel, BorderLayout.CENTER);
         showingCreateNewOrder = true;
         repaint();
@@ -200,19 +242,25 @@ public class ManagerOrderView extends JPanel {
         confirmButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                 newOrder.setProducts(orderProducts);
                 newOrder.setCompanyName(companyName);
                 newOrder.setAddress(address);
+                newOrder.setTime(timestamp);
                 newOrder.setConfirmed(false);
                 newOrder.setDelivered(false);
                 SendOrderToDatabase sendOrderToDatabase = new SendOrderToDatabase(newOrder);
                 sendOrderToDatabase.execute();
+                while (!sendOrderToDatabase.isDone()) {}
+                System.out.println("Clearing Order");
                 clearOrder();
+                importPastOrders();
             }
         });
 
         importConfirmOrderInformation();
         JTable orderTable = new JTable(orderTableModel);
+        orderTable.getColumnModel().getColumn(0).setMinWidth(200);
         orderTable.setShowGrid(true);
         JScrollPane orderScrollPane = new JScrollPane(orderTable,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -239,6 +287,10 @@ public class ManagerOrderView extends JPanel {
             remove(confirmNewOrderPanel);
             showingConfirmNewOrder = false;
         }
+        if (showingOrderDetail) {
+            remove(orderDetailPanel);
+            showingOrderDetail = false;
+        }
         add(confirmNewOrderPanel, BorderLayout.CENTER);
         showingConfirmNewOrder = true;
         repaint();
@@ -251,19 +303,26 @@ public class ManagerOrderView extends JPanel {
         // Sub-panel to hold buttons
         JPanel buttonPanel = new JPanel(new BorderLayout());
 
+        importPastOrders();
+        JTable pastOrderTable = new JTable(pastOrderTableModel);
+
         // New Item and Order buttons
         JButton newItemButton = new JButton("Order Details");
         buttonPanel.add(newItemButton, BorderLayout.EAST);
         newItemButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                try {
+                    showOrderDetail(pastOrders.get(pastOrderTable.getSelectedRow()));
+                } catch (ArrayIndexOutOfBoundsException e1) {
+                    System.out.println(e1);
+                }
             }
         });
 
         // Setting up table to show inventory information
-        importPastOrders();
-        JTable pastOrderTable = new JTable(pastOrderTableModel);
         pastOrderTable.setShowGrid(true);
+        pastOrderTable.getColumnModel().getColumn(1).setMinWidth(200);
         JScrollPane pastOrderScrollPane = new JScrollPane(pastOrderTable,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -288,28 +347,100 @@ public class ManagerOrderView extends JPanel {
             remove(pastOrdersPanel);
             showingViewPastOrders = false;
         }
+        if (showingOrderDetail) {
+            remove(orderDetailPanel);
+            showingOrderDetail = false;
+        }
         add(pastOrdersPanel, BorderLayout.CENTER);
         showingViewPastOrders = true;
         repaint();
         revalidate();
     }
 
+    private void showOrderDetail(Order order) {
+        orderDetailPanel = new JPanel(new BorderLayout());
+        JPanel buttonPanel = new JPanel(new BorderLayout());
+
+        HashMap<Product, Integer> orderDetailProducts = order.getProducts();
+        // Setting up table to show inventory information
+        String[] column = new String[] {"Name", "Pkg Size", "Current Inventory", "Amount Ordered"}; // Holds names of columns in the table
+        String[][] data = new String[orderDetailProducts.size()][column.length]; // Holds information for columns
+        Iterator it = orderDetailProducts.entrySet().iterator();
+        int i=0;
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            Product temp = (Product) pair.getKey();
+            data[i][0] = temp.getName();
+            data[i][1] = String.valueOf(temp.getPkgSize());
+            data[i][2] = String.valueOf(temp.getInventoryLevel());
+            data[i][3] = String.valueOf(pair.getValue());
+            i++;
+        }
+        DefaultTableModel orderDetailTableModel = new DefaultTableModel(data, column) {
+            @Override
+            public boolean isCellEditable(int i, int i1) {
+                return false;
+            }
+        };
+        JTable orderDetailTable = new JTable(orderDetailTableModel);
+        orderDetailTable.setShowGrid(true);
+        JScrollPane orderScrollPane = new JScrollPane(orderDetailTable,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        orderScrollPane.setPreferredSize(new Dimension(600, 350));
+
+        JButton backButton = new JButton("Back");
+        buttonPanel.add(backButton, BorderLayout.EAST);
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showViewPastOrders();
+            }
+        });
+
+        orderDetailPanel.add(orderScrollPane, BorderLayout.CENTER);
+        orderDetailPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        if (showingCreateNewOrder) {
+            remove(newOrderPanel);
+            showingCreateNewOrder = false;
+        }
+        if (showingConfirmNewOrder) {
+            remove(confirmNewOrderPanel);
+            showingConfirmNewOrder = false;
+        }
+        if (showingAddNewItem) {
+            remove(newItemPanel);
+            showingAddNewItem = false;
+        }
+        if (showingViewPastOrders) {
+            remove(pastOrdersPanel);
+            showingViewPastOrders = false;
+        }
+        if (showingOrderDetail) {
+            remove(orderDetailPanel);
+            showingOrderDetail = false;
+        }
+        add(orderDetailPanel, BorderLayout.CENTER);
+        showingOrderDetail = true;
+        repaint();
+        revalidate();
+    }
+
     private void showAddNewItem() {
         newItemPanel = new JPanel(new BorderLayout());
+        JPanel itemSelectionPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
 
-        items = new ArrayList<>();
-        items.add("Select an Item");
-        importItems();
-        JComboBox itemComboBox = new JComboBox(items.toArray());
+        importAllItems();
+        itemComboBox.setModel(new DefaultComboBoxModel(items.toArray()));
         JTextField amountField = new JTextField();
 
-        JPanel itemSelectionPanel = new JPanel(new GridLayout(3, 2));
         JPanel buttonPanel = new JPanel(new BorderLayout());
         JButton addButton = new JButton("Add Item");
 
         String[] categories = {"Select a Category", "All", "Food", "Non-Alcoholic", "Alcohol"};
         JLabel categoryLabel = new JLabel("Category:");
-        itemSelectionPanel.add(categoryLabel);
         JComboBox categoryComboBox = new JComboBox(categories);
         categoryComboBox.addActionListener(new ActionListener() {
             @Override
@@ -317,15 +448,19 @@ public class ManagerOrderView extends JPanel {
                 int categoryIndex = categoryComboBox.getSelectedIndex();
                 switch(categoryIndex) {
                     case 1:
+                        importAllItems();
                         itemComboBox.setEnabled(true);
                         break;
                     case 2:
+                        importFoodItems();
                         itemComboBox.setEnabled(true);
                         break;
                     case 3:
+                        importNonAlcoholicItems();
                         itemComboBox.setEnabled(true);
                         break;
                     case 4:
+                        importAlcoholItems();
                         itemComboBox.setEnabled(true);
                         break;
                     default:
@@ -334,33 +469,35 @@ public class ManagerOrderView extends JPanel {
                 }
             }
         });
-        itemSelectionPanel.add(categoryComboBox);
 
         JLabel itemLabel = new JLabel("Item:");
-        itemSelectionPanel.add(itemLabel);
         itemComboBox.setEnabled(false);
         itemComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int itemIndex = itemComboBox.getSelectedIndex();
-                switch(itemIndex) {
-                    case 0:
-                        amountField.setEnabled(false);
-                        addButton.setEnabled(false);
-                        break;
-                    default:
-                        amountField.setEnabled(true);
-                        addButton.setEnabled(true);
-                        temp = ManagerView.products.get(itemIndex-1);
-                        System.out.println(ManagerView.products.get(itemIndex-1).getName());
-                        break;
-                }
+                try {
+                    int itemIndex = itemComboBox.getSelectedIndex();
+                    switch (itemIndex) {
+                        case 0:
+                            amountField.setEnabled(false);
+                            addButton.setEnabled(false);
+                            break;
+                        default:
+                            amountField.setEnabled(true);
+                            addButton.setEnabled(true);
+                            for (int i=0; i<ManagerView.products.size(); i++) {
+                                if (ManagerView.products.get(i).getName().equals(items.get(itemIndex))) {
+                                    temp = ManagerView.products.get(i);
+                                    //System.out.println(items.get(itemIndex));
+                                }
+                            }
+                            break;
+                    }
+                } catch (ArrayIndexOutOfBoundsException e1) {}
             }
         });
-        itemSelectionPanel.add(itemComboBox);
 
         JLabel amountLabel = new JLabel("Amount:");
-        itemSelectionPanel.add(amountLabel);
         amountField.setEnabled(false);
         amountField.addKeyListener(new KeyAdapter() {
             @Override
@@ -374,7 +511,6 @@ public class ManagerOrderView extends JPanel {
                 }
             }
         });
-        itemSelectionPanel.add(amountField);
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new ActionListener() {
@@ -402,6 +538,26 @@ public class ManagerOrderView extends JPanel {
         });
         buttonPanel.add(addButton, BorderLayout.EAST);
 
+        c.gridx=0;
+        c.gridy=0;
+        itemSelectionPanel.add(categoryLabel, c);
+        c.gridx=1;
+        c.gridy=0;
+        itemSelectionPanel.add(categoryComboBox, c);
+        c.gridx=0;
+        c.gridy=1;
+        itemSelectionPanel.add(itemLabel, c);
+        c.gridx=1;
+        c.gridy=1;
+        itemSelectionPanel.add(itemComboBox, c);
+        c.gridx=0;
+        c.gridy=2;
+        itemSelectionPanel.add(amountLabel, c);
+        c.gridx=1;
+        c.gridy=2;
+        amountField.setColumns(20);
+        itemSelectionPanel.add(amountField, c);
+
         newItemPanel.add(itemSelectionPanel, BorderLayout.CENTER);
         newItemPanel.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -421,21 +577,69 @@ public class ManagerOrderView extends JPanel {
             remove(newItemPanel);
             showingAddNewItem = false;
         }
+        if (showingOrderDetail) {
+            remove(orderDetailPanel);
+            showingOrderDetail = false;
+        }
         add(newItemPanel, BorderLayout.CENTER);
         showingAddNewItem = true;
         repaint();
         revalidate();
     }
 
-    private void importItems() {
+    private void importAllItems() {
+        items = new ArrayList<>();
+        items.add("Select an Item");
+        itemComboBox.removeAllItems();
+        itemComboBox.addItem("Select an Item");
         for (int i=0; i<ManagerView.products.size(); i++) {
             items.add(ManagerView.products.get(i).getName());
+            itemComboBox.addItem(ManagerView.products.get(i).getName());
+        }
+    }
+
+    private void importFoodItems() {
+        items = new ArrayList<>();
+        items.add("Select an Item");
+        itemComboBox.removeAllItems();
+        itemComboBox.addItem("Select an Item");
+        for (int i=0; i<ManagerView.products.size(); i++) {
+            if (ManagerView.products.get(i).getProdType().equals("Food")) {
+                items.add(ManagerView.products.get(i).getName());
+                itemComboBox.addItem(ManagerView.products.get(i).getName());
+            }
+        }
+    }
+
+    private void importNonAlcoholicItems() {
+        items = new ArrayList<>();
+        items.add("Select an Item");
+        itemComboBox.removeAllItems();
+        itemComboBox.addItem("Select an Item");
+        for (int i=0; i<ManagerView.products.size(); i++) {
+            if (ManagerView.products.get(i).getProdType().equals("Non-Alcoholic")) {
+                items.add(ManagerView.products.get(i).getName());
+                itemComboBox.addItem(ManagerView.products.get(i).getName());
+            }
+        }
+    }
+
+    private void importAlcoholItems() {
+        items = new ArrayList<>();
+        items.add("Select an Item");
+        itemComboBox.removeAllItems();
+        itemComboBox.addItem("Select an Item");
+        for (int i=0; i<ManagerView.products.size(); i++) {
+            if (ManagerView.products.get(i).getProdType().equals("Alcohol")) {
+                items.add(ManagerView.products.get(i).getName());
+                itemComboBox.addItem(ManagerView.products.get(i).getName());
+            }
         }
     }
 
     private void importOrderInformation() {
         // Setting up table to show inventory information
-        String[] column = new String[] {"Name", "Pkg Size", "Current Inventory", "Amount", "Price"}; // Holds names of columns in the table
+        String[] column = new String[] {"Name", "Pkg Size", "Current Level", "Amount", "Price"}; // Holds names of columns in the table
         String[][] data = new String[orderProducts.size()][column.length]; // Holds information for columns
         Iterator it = orderProducts.entrySet().iterator();
         int i=0;
@@ -451,15 +655,20 @@ public class ManagerOrderView extends JPanel {
         }
         orderTableModel = new DefaultTableModel(data, column) {
             @Override
-            public boolean isCellEditable(int i, int i1) {
-                return false;
+            public boolean isCellEditable(int row, int col) {
+                switch (col) {
+                    case 3:
+                        return true;
+                    default:
+                        return false;
+                }
             }
         };
     }
 
     private void importConfirmOrderInformation() {
         // Setting up table to show inventory information
-        String[] column = new String[] {"Name", "Pkg Size", "Current Inventory", "Amount", "Price"}; // Holds names of columns in the table
+        String[] column = new String[] {"Name", "Pkg Size", "Current Level", "Amount", "Price"}; // Holds names of columns in the table
         String[][] data = new String[orderProducts.size()][column.length]; // Holds information for columns
         Iterator it = orderProducts.entrySet().iterator();
         int i=0;
@@ -482,19 +691,23 @@ public class ManagerOrderView extends JPanel {
     }
 
     private void importPastOrders() {
-        String[] column = {"Order Number", "Confirmed", "Delivered"};
+        pastOrders = new ArrayList<>();
+
+        String[] column = {"Order Number", "Order Date", "Confirmed", "Delivered"};
         String[][] data = new String[ManagerView.orders.size()][column.length]; // Holds information for columns
         if (!ManagerView.orders.isEmpty()) {
             for (int i=0; i<ManagerView.orders.size(); i++) {
+                pastOrders.add(ManagerView.orders.get(i));
                 data[i][0] = String.valueOf(ManagerView.orders.get(i).getOrderNumber());
+                data[i][1] = ManagerView.orders.get(i).getFormattedTime();
                 if (ManagerView.orders.get(i).isConfirmed())
-                    data[i][1] = "Yes";
-                else
-                    data[i][1] = "No";
-                if (ManagerView.orders.get(i).isDelivered())
                     data[i][2] = "Yes";
                 else
                     data[i][2] = "No";
+                if (ManagerView.orders.get(i).isDelivered())
+                    data[i][3] = "Yes";
+                else
+                    data[i][3] = "No";
             }
         }
         pastOrderTableModel = new DefaultTableModel(data, column) {
@@ -523,19 +736,19 @@ public class ManagerOrderView extends JPanel {
                         "root","password");
                 Statement statement = conn.createStatement();
 
-                String queryOrder = "INSERT INTO inv_order (address, company_name, confirmed, delivered) " +
-                        "VALUES (?,?,?,?);";
+                String queryOrder = "INSERT INTO inv_order (address, company_name, date, confirmed, delivered) " +
+                        "VALUES (?,?,?,?,?);";
                 PreparedStatement orderPS = conn.prepareStatement(queryOrder);
                 orderPS.setString(1, order.getAddress());
                 orderPS.setString(2, order.getCompanyName());
-                orderPS.setBoolean(3, order.isConfirmed());
-                orderPS.setBoolean(4, order.isDelivered());
+                orderPS.setTimestamp(3, order.getTime());
+                orderPS.setBoolean(4, order.isConfirmed());
+                orderPS.setBoolean(5, order.isDelivered());
                 orderPS.execute();
 
                 String queryProduct = "INSERT INTO order_products (order_number, upc, amount) " +
                         "VALUES (?,?,?)";
-                PreparedStatement testPS = conn.prepareStatement("SELECT * from inv_order ORDER BY order_number DESC LIMIT 1;");
-                ResultSet rs = testPS.executeQuery();
+                ResultSet rs = statement.executeQuery("SELECT * from inv_order ORDER BY order_number DESC LIMIT 1;");
                 rs.next();
                 Iterator it = orderProducts.entrySet().iterator();
                 while (it.hasNext()) {
@@ -548,6 +761,8 @@ public class ManagerOrderView extends JPanel {
                     productsPS.execute();
                 }
                 conn.close();
+
+                ManagerView.importOrdersFromDatabase();
 
                 System.out.println("Order Sent");
             } catch(Exception e) {
@@ -567,5 +782,29 @@ public class ManagerOrderView extends JPanel {
         orderProducts = new HashMap<>();
         showAddNewItem();
         showCreateNewOrder();
+    }
+
+    private JTextField createTextField() {
+        final JTextField field = new JTextField();
+        ((AbstractDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int off, String str, AttributeSet attr)
+                    throws BadLocationException {
+                int length = field.getDocument().getLength();
+                if (length + str.length() <= 1) {
+                    fb.insertString(off, str.replaceAll("[^1-9]", ""), attr);  // remove non-digits
+                }
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int off, int len, String str, AttributeSet attr)
+                    throws BadLocationException {
+                int length = field.getDocument().getLength();
+                if (length + str.length() <= 1) {
+                    fb.replace(off, len, str.replaceAll("[^1-9]", ""), attr);  // remove non-digits
+                }
+            }
+        });
+        return field;
     }
 }
