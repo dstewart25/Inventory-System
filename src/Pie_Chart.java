@@ -12,10 +12,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Random;
 
 public class Pie_Chart extends JPanel{
-    private static ObservableList<PieChart.Data> details = FXCollections.observableArrayList();
-    private static PieChart pieChart;
+    private ObservableList<PieChart.Data> details = FXCollections.observableArrayList();
+    private PieChart pieChart;
 
     public Pie_Chart(String viewBy,String daTe){
         setLayout(new GridLayout(2,3,10,10));
@@ -61,17 +62,18 @@ public class Pie_Chart extends JPanel{
     }
 
     private void setChart(String param,String Date){
-        //Date format: Mon Apr 16 19:25:54 EDT 2018
+        //Date format: Mon Apr 30 19:25:54 EDT 2018
 
+        Random random = new Random();
         //percentage of total sales
-        double foodPiece=25;
-        double beveragePiece=25;
-        double tobaccoPiece=25;
-        double miscPiece=25;
+        double foodPiece = random.nextInt(100);
+        double beveragePiece = random.nextInt(100-(int)foodPiece);
+        double tobaccoPiece = random.nextInt(100-(int)foodPiece-(int)beveragePiece);
+        double miscPiece= 100-foodPiece-beveragePiece-tobaccoPiece;
         String temp=param;
         String temp2=Date;
 
-        /**Grab the data from the DB and reassign the chart piece values above
+        /**Grab the data from the DB and reassign the chart piece values above,
          **param and Date will be passed as search parameters
         try {
             // Connecting to database
