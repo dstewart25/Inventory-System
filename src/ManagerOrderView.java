@@ -1,5 +1,6 @@
 import sun.rmi.runtime.Log;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -11,6 +12,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 import java.text.NumberFormat;
 import java.util.*;
@@ -51,13 +55,41 @@ public class ManagerOrderView extends JPanel {
 
     private void initialize() {
         JPanel orderOptionsPanel = new JPanel(new GridLayout(2, 1));
+        JPanel newOrder = new JPanel(new BorderLayout()); // holds icon and label for new order button
+        JPanel pastOrders = new JPanel(new BorderLayout());
+
+        /* Setting up images for buttons */
+        BufferedImage newOrderBI = new BufferedImage(512, 512, BufferedImage.TYPE_4BYTE_ABGR);
+        try {
+            newOrderBI = ImageIO.read(new File("Assets/new.png"));
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        ImageIcon newOrderII = new ImageIcon(newOrderBI);
+        Image newOrderImage = newOrderII.getImage();
+        newOrderImage = newOrderImage.getScaledInstance(128,128,Image.SCALE_SMOOTH);
+
+        BufferedImage pastOrderBI = new BufferedImage(512, 512, BufferedImage.TYPE_4BYTE_ABGR);
+        try {
+            pastOrderBI = ImageIO.read(new File("Assets/history.png"));
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        ImageIcon pastOrderII = new ImageIcon(pastOrderBI);
+        Image pastOrderImage = pastOrderII.getImage();
+        pastOrderImage = pastOrderImage.getScaledInstance(128,128,Image.SCALE_SMOOTH);
 
         showCreateNewOrder();
 
         /*
         Adding buttons for creating a new order and viewing past orders
          */
-        JButton newOrderButton = new JButton("New Order");
+        JButton newOrderButton = new JButton();
+        newOrderButton.setLayout(new BorderLayout());
+        newOrderButton.add(BorderLayout.CENTER, new JLabel(new ImageIcon(newOrderImage)));
+        JLabel newOrderLabel = new JLabel("New Order");
+        newOrderLabel.setHorizontalAlignment(JLabel.CENTER);
+        newOrderButton.add(BorderLayout.SOUTH, newOrderLabel);
         newOrderButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -67,7 +99,12 @@ public class ManagerOrderView extends JPanel {
             }
         });
         orderOptionsPanel.add(newOrderButton);
-        JButton pastOrdersButton = new JButton("Past Orders");
+        JButton pastOrdersButton = new JButton();
+        pastOrdersButton.setLayout(new BorderLayout());
+        pastOrdersButton.add(BorderLayout.CENTER, new JLabel(new ImageIcon(pastOrderImage)));
+        JLabel pastOrdersLabel = new JLabel("Past Orders");
+        pastOrdersLabel.setHorizontalAlignment(JLabel.CENTER);
+        pastOrdersButton.add(BorderLayout.SOUTH, pastOrdersLabel);
         pastOrdersButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

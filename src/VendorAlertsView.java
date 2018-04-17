@@ -1,7 +1,11 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.*;
 import java.sql.DriverManager;
@@ -32,10 +36,36 @@ public class VendorAlertsView extends JLayeredPane {
 
         showViewMessages();
 
+        /* Setting up images for buttons */
+        BufferedImage createMessageBI = new BufferedImage(512, 512, BufferedImage.TYPE_4BYTE_ABGR);
+        try {
+            createMessageBI = ImageIO.read(new File("Assets/create.png"));
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        ImageIcon createMessageII = new ImageIcon(createMessageBI);
+        Image createMessageImage = createMessageII.getImage();
+        createMessageImage = createMessageImage.getScaledInstance(128,128,Image.SCALE_SMOOTH);
+
+        BufferedImage viewMessageBI = new BufferedImage(512, 512, BufferedImage.TYPE_4BYTE_ABGR);
+        try {
+            viewMessageBI = ImageIO.read(new File("Assets/view.png"));
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        ImageIcon viewMessageII = new ImageIcon(viewMessageBI);
+        Image viewMessageImage = viewMessageII.getImage();
+        viewMessageImage = viewMessageImage.getScaledInstance(128,128,Image.SCALE_SMOOTH);
+
         /*
          ** Adding buttons for viewing alerts and creating messages
          */
-        JButton createMessage = new JButton("Create Message");
+        JButton createMessage = new JButton();
+        createMessage.setLayout(new BorderLayout());
+        createMessage.add(BorderLayout.CENTER, new JLabel(new ImageIcon(createMessageImage)));
+        JLabel createMessageLabel = new JLabel("Create Message");
+        createMessageLabel.setHorizontalAlignment(JLabel.CENTER);
+        createMessage.add(BorderLayout.SOUTH, createMessageLabel);
         alertsOptionPanel.add(createMessage);
         createMessage.addActionListener(new ActionListener() {
             @Override
@@ -45,7 +75,12 @@ public class VendorAlertsView extends JLayeredPane {
                 }
             }
         });
-        JButton viewMessages = new JButton("View Messages");
+        JButton viewMessages = new JButton();
+        viewMessages.setLayout(new BorderLayout());
+        viewMessages.add(BorderLayout.CENTER, new JLabel(new ImageIcon(viewMessageImage)));
+        JLabel viewMessageLabel = new JLabel("View Messages");
+        viewMessageLabel.setHorizontalAlignment(JLabel.CENTER);
+        viewMessages.add(BorderLayout.SOUTH, viewMessageLabel);
         alertsOptionPanel.add(viewMessages);
         viewMessages.addActionListener(new ActionListener() {
             @Override
